@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Selector</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            margin-top: 50px;
+            align-content: center;
+        }
+
+        main {
+            padding: 2rem;
+            max-width: 800px;
+            margin: auto;
+        }
+
+        .start {
+            text-align: center;
+            font-size: 1.5rem;
+            color: #333;
+            background-color: antiquewhite;
+        }
+
+        button.btn {
+            background-color: #6fbafc;
+            color: #fff;
+            padding: 10px 20px;
+            margin-top: 20px;
+            display: block;
+            margin: auto;
+            width: 300px;
+            margin-bottom: 40px;
+        }
+
+        button.btn-saved {
+            background-color: #d38ffb;
+            color: #fff;
+            padding: 10px 20px;
+            margin-top: 20px;
+            display: block;
+            margin: auto;
+            width: 300px;
+        }
+
+        button.btn-save {
+            background-color: #8ffbb8;
+            color: #fff;
+            padding: 10px 20px;
+            margin-top: 20px;
+            display: block;
+            margin: auto;
+            width: 100px;
+        }
+
+        button.btn-back {
+            background-color: #ff6f61;
+            color: #fff;
+            padding: 10px 20px;
+            margin-top: 20px;
+            display: block;
+            margin: auto;
+            width: 150px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Color Selector</h1>
+    </header>
+    <main>
+        <p class="start">Click below to get started</p>
+        <button class="btn">Recommend me colours!</button>
+        <button class="btn-saved">View Saved Palettes</button>
+        <section id="questions"></section>
+        <section id="result" style="display:none;">
+            <h2>Recommended Palette</h2>
+            <div id="save"></div>
+            <div id="palette"></div>
+        </section>
+        <section id="saved-palettes" style="display:none;">
+            <h2>Saved Palettes</h2>
+            <button class="btn-back">Back</button>
+            <div id="saved-list"></div>
+        </section>
+    </main>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const recommendButton = document.querySelector('.btn');
+            const viewSavedButton = document.querySelector('.btn-saved');
+            const backButton = document.querySelector('.btn-back');
+            const questionsSection = document.getElementById('questions');
+            const resultSection = document.getElementById('result');
+            const savedPalettesSection = document.getElementById('saved-palettes');
+            const paletteDiv = document.getElementById('palette');
+            const savedListDiv = document.getElementById('saved-list');
+            const saveDiv = document.getElementById('save');
+
+            recommendButton.addEventListener('click', () => {
+                showQuestions();
+            });
+
+            viewSavedButton.addEventListener('click', () => {
+                showSavedPalettes();
+            });
+
+            backButton.addEventListener('click', () => {
+                showRecommendations();
+            });
+
+            function showQuestions() {
+                questionsSection.innerHTML = `
+                    <h2>Answer the following questions to get your color palette:</h2>
+                    <form id="questions-form">
+                        <label for="color-preference">Do you prefer warm or cool colors?</label><br>
+                        <select id="color-preference" name="color-preference">
+                            <option value="warm">Warm</option>
+                            <option value="cool">Cool</option>
+                        </select><br><br>
+
+                        <label for="color-intensity">Do you prefer vibrant or muted colors?</label><br>
+                        <select id="color-intensity" name="color-intensity">
+                            <option value="vibrant">Vibrant</option>
+                            <option value="muted">Muted</option>
+                        </select><br><br>
+
+                        <label for="color-usage">Do you need suggestion for?</label><br>
+                        <select id="color-usage" name="color-usage">
+                            <option value="room">Room Decor</option>
+                            <option value="website">Making a Website</option>
+                        </select><br><br>
+
+                        <button type="button" class="btn-submit">Submit</button>
+                    </form>
+                `;
+
+                document.querySelector('.btn-submit').addEventListener('click', () => {
+                    const form = document.getElementById('questions-form');
+                    const colorPreference = form['color-preference'].value;
+                    const colorIntensity = form['color-intensity'].value;
+                    const colorUsage = form['color-usage'].value;
+
+                    saveDiv.innerHTML = `<button type="button" class="btn-save">Save</button>`;
+                    
+                    generatePalette(colorPreference, colorIntensity, colorUsage);
+                    
+                    document.querySelector('.btn-save').addEventListener('click', () => {
+                        savePalette(colorPreference, colorIntensity, colorUsage);
+                    });
+                });
+
+                resultSection.style.display = 'none';
+                savedPalettesSection.style.display = 'none';
+                questionsSection.style.display = 'block';
+            }
+
+            function showRecommendations() {
+                questionsSection.style.display = 'none';
+                savedPalettesSection.style.display = 'none';
+                resultSection.style.display = 'block';
+            }
+
+            function generatePalette(preference, intensity, usage) {
+                const palettes = {
+                    warm: {
+                        vibrant: {
+                            room: ['#FF5733', '#FFC300', '#FFBF00', '#F39C12', '#E74C3C'],
+                            website: ['#FF5733', '#F39C12', '#C0392B', '#E67E22', '#D35400']
+                        },
+                        muted: {
+                            room: ['#F5A623', '#F4A261', '#E9C46A', '#D6A4A4', '#D9B5A4'],
+                            website: ['#F5A623', '#F4A261', '#E9C46A', '#E2B67D', '#D6BDA4']
+                        }
+                    },
+                    cool: {
+                        vibrant: {
+                            room: ['#1F77B4', '#AEC7E8', '#17BECF', '#00A3E0', '#4B77BE'],
+                            website: ['#1F77B4', '#00A3E0', '#17BECF', '#1F8EFA', '#54A0FF']
+                        },
+                        muted: {
+                            room: ['#7F7F7F', '#C0C0C0', '#D3D3D3', '#B0BEC5', '#CFD8DC'],
+                            website: ['#7F7F7F', '#B0BEC5', '#CFD8DC', '#90A4AE', '#9E9E9E']
+                        }
+                    }
+                };
+
+                const selectedPalette = palettes[preference][intensity][usage];
+                displayPalette(selectedPalette);
+            }
+
+            function displayPalette(colors) {
+                paletteDiv.innerHTML = colors.map(color => `
+                    <div style="background-color: ${color}; width: 100px; height: 100px; display: inline-block; margin: 5px;"></div>
+                `).join('');
+
+                resultSection.style.display = 'block';
+                questionsSection.style.display = 'none';
+                savedPalettesSection.style.display = 'none';
+            }
+
+            function savePalette(preference, intensity, usage) {
+                const palettes = {
+                    warm: {
+                        vibrant: {
+                            room: ['#FF5733', '#FFC300', '#FFBF00', '#F39C12', '#E74C3C'],
+                            website: ['#FF5733', '#F39C12', '#C0392B', '#E67E22', '#D35400']
+                        },
+                        muted: {
+                            room: ['#F5A623', '#F4A261', '#E9C46A', '#D6A4A4', '#D9B5A4'],
+                            website: ['#F5A623', '#F4A261', '#E9C46A', '#E2B67D', '#D6BDA4']
+                        }
+                    },
+                    cool: {
+                        vibrant: {
+                            room: ['#1F77B4', '#AEC7E8', '#17BECF', '#00A3E0', '#4B77BE'],
+                            website: ['#1F77B4', '#00A3E0', '#17BECF', '#1F8EFA', '#54A0FF']
+                        },
+                        muted: {
+                            room: ['#7F7F7F', '#C0C0C0', '#D3D3D3', '#B0BEC5', '#CFD8DC'],
+                            website: ['#7F7F7F', '#B0BEC5', '#CFD8DC', '#90A4AE', '#9E9E9E']
+                        }
+                    }
+                };
+
+                const selectedPalette = palettes[preference][intensity][usage];
+                let savedPalettes = JSON.parse(localStorage.getItem('savedPalettes')) || [];
+                savedPalettes.push(selectedPalette);
+                localStorage.setItem('savedPalettes', JSON.stringify(savedPalettes));
+            }
+
+            function showSavedPalettes() {
+                const savedPalettes = JSON.parse(localStorage.getItem('savedPalettes')) || [];
+                savedListDiv.innerHTML = savedPalettes.map((palette, index) => `
+                    <div>
+                        <h3>Palette ${index + 1}</h3>
+                        ${palette.map(color => `
+                            <div style="background-color: ${color}; width: 100px; height: 100px; display: inline-block; margin: 5px;"></div>
+                        `).join('')}
+                    </div>
+                `).join('');
+
+                savedPalettesSection.style.display = 'block';
+                resultSection.style.display = 'none';
+                questionsSection.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
